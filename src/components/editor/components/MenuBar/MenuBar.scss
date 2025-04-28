@@ -1,0 +1,27 @@
+.menuBar {
+    border-bottom: 1px solid #ccc;
+
+    .button-group {
+        display: flex;
+        align-items: center;
+        border-radius: 4px;
+        overflow: hidden;
+
+        button {
+            height: 30px;
+            background-color: #fff;
+            padding: 4px 6px;
+            border: 1px solid #fff;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(9,30,66,0.13);
+            }
+
+            &.is-active {
+                background-color: #344563;
+                color: #fff;
+            }
+        }
+    }
+}

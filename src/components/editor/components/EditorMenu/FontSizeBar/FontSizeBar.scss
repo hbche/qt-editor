@@ -1,0 +1,86 @@
+.fontSizeBar {
+    position: relative;
+
+    &-trigger {
+        position: relative;
+    }
+
+    &-tooltip {
+        position: absolute;
+        top: -48px;
+        left: 0;
+        visibility: hidden;
+        padding: 0 10px;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+
+        & &-btn {
+            cursor: pointer;
+            border-radius: 2px;
+            padding: 0 6px;
+            font-size: 20px;
+
+            &:hover {
+                background-color: var(--gray-1);
+            }
+        }
+
+        &-list {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            list-style: none;
+            padding: 2px 4px;
+
+            &-item:not(:last-child) {
+                margin-right: 4px;
+            }
+
+            &-item input {
+                width: 14px;
+                border: none;
+                outline: none;
+
+                &::-webkit-inner-spin-button {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    & &-btn {
+        padding: 8px 4px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 14px;
+
+        svg {
+            display: inline-block;
+            padding: 3px;
+            border-radius: 2px;
+        }
+
+        &:hover svg {
+            color: #2b2f36;
+            background-color: #1f232914;
+        }
+
+        &.active svg {
+            color: #1456f0;
+            background-color: #1456f01a;
+        }
+    }
+
+    &-trigger:hover &-tooltip {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    &.active svg {
+        color: #1456f0;
+        background-color: #1456f01a;
+    }
+}
