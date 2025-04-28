@@ -28,6 +28,7 @@ import {
   BubbleMenu,
   EditorContent,
   FloatingMenu,
+  isTextSelection,
   Editor as TiptapEditor,
   useEditor,
 } from '@tiptap/react';
@@ -119,126 +120,130 @@ cd my-tiptap-project</code></pre>
     `;
 
 export interface EditorProps {
+  /**
+   * 是否可编辑
+   */
   editable: boolean;
 }
 
 const Editor = ({ editable }: EditorProps) => {
   const [jsonContent, setJSONContent] = useState<any>({});
+  const extensions = [
+    Document,
+    Heading,
+    Paragraph,
+    // CustomParagraph,
+    Text,
+    Underline,
+    TextStyle,
+    FontFamily,
+    Strike,
+    History,
+    Italic,
+    Bold,
+    Color,
+    TextAlign.configure({
+      types: ['heading', 'paragraph', 'codeBlock'],
+    }),
+    Link.configure({
+      openOnClick: false,
+      autolink: true,
+      defaultProtocol: 'https',
+      protocols: ['http', 'https'],
+      isAllowedUri: (url, ctx) => {
+        try {
+          // construct URL
+          const parsedUrl = url.includes(':')
+            ? new URL(url)
+            : new URL(`${ctx.defaultProtocol}://${url}`);
 
+          // use default validation
+          if (!ctx.defaultValidate(parsedUrl.href)) {
+            return false;
+          }
+
+          // disallowed protocols
+          const disallowedProtocols = ['ftp', 'file', 'mailto'];
+          const protocol = parsedUrl.protocol.replace(':', '');
+
+          if (disallowedProtocols.includes(protocol)) {
+            return false;
+          }
+
+          // only allow protocols specified in ctx.protocols
+          const allowedProtocols = ctx.protocols.map((p) =>
+            typeof p === 'string' ? p : p.scheme
+          );
+
+          if (!allowedProtocols.includes(protocol)) {
+            return false;
+          }
+
+          // disallowed domains
+          const disallowedDomains = [
+            'example-phishing.com',
+            'malicious-site.net',
+          ];
+          const domain = parsedUrl.hostname;
+
+          if (disallowedDomains.includes(domain)) {
+            return false;
+          }
+
+          // all checks have passed
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      shouldAutoLink: (url) => {
+        try {
+          // construct URL
+          const parsedUrl = url.includes(':')
+            ? new URL(url)
+            : new URL(`https://${url}`);
+
+          // only auto-link if the domain is not in the disallowed list
+          const disallowedDomains = [
+            'example-no-autolink.com',
+            'another-no-autolink.com',
+          ];
+          const domain = parsedUrl.hostname;
+
+          return !disallowedDomains.includes(domain);
+        } catch {
+          return false;
+        }
+      },
+    }),
+    ListItem,
+    OrderedList,
+    BulletList,
+    TaskList,
+    TaskItem.configure({
+      nested: true,
+    }),
+    Blockquote,
+    CodeBlock,
+    HorizontalRule,
+    Image,
+    Table.configure({
+      resizable: true,
+    }),
+    TableHeader,
+    TableRow,
+    TableCell,
+    // 自定义组件
+    FontSize.configure({
+      types: ['heading', 'paragraph'],
+      defaultSize: '16px',
+      step: 2,
+      minSize: 12,
+      maxSize: 72,
+    }),
+  ];
   const editor: TiptapEditor | null = useEditor({
-    extensions: [
-      Document,
-      Heading,
-      Paragraph,
-      // CustomParagraph,
-      Text,
-      Underline,
-      TextStyle,
-      FontFamily,
-      Strike,
-      History,
-      Italic,
-      Bold,
-      Color,
-      TextAlign.configure({
-        types: ['heading', 'paragraph', 'codeBlock'],
-      }),
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        defaultProtocol: 'https',
-        protocols: ['http', 'https'],
-        isAllowedUri: (url, ctx) => {
-          try {
-            // construct URL
-            const parsedUrl = url.includes(':')
-              ? new URL(url)
-              : new URL(`${ctx.defaultProtocol}://${url}`);
-
-            // use default validation
-            if (!ctx.defaultValidate(parsedUrl.href)) {
-              return false;
-            }
-
-            // disallowed protocols
-            const disallowedProtocols = ['ftp', 'file', 'mailto'];
-            const protocol = parsedUrl.protocol.replace(':', '');
-
-            if (disallowedProtocols.includes(protocol)) {
-              return false;
-            }
-
-            // only allow protocols specified in ctx.protocols
-            const allowedProtocols = ctx.protocols.map((p) =>
-              typeof p === 'string' ? p : p.scheme
-            );
-
-            if (!allowedProtocols.includes(protocol)) {
-              return false;
-            }
-
-            // disallowed domains
-            const disallowedDomains = [
-              'example-phishing.com',
-              'malicious-site.net',
-            ];
-            const domain = parsedUrl.hostname;
-
-            if (disallowedDomains.includes(domain)) {
-              return false;
-            }
-
-            // all checks have passed
-            return true;
-          } catch {
-            return false;
-          }
-        },
-        shouldAutoLink: (url) => {
-          try {
-            // construct URL
-            const parsedUrl = url.includes(':')
-              ? new URL(url)
-              : new URL(`https://${url}`);
-
-            // only auto-link if the domain is not in the disallowed list
-            const disallowedDomains = [
-              'example-no-autolink.com',
-              'another-no-autolink.com',
-            ];
-            const domain = parsedUrl.hostname;
-
-            return !disallowedDomains.includes(domain);
-          } catch {
-            return false;
-          }
-        },
-      }),
-      FontSize.configure({
-        types: ['heading', 'paragraph'],
-        defaultSize: '16px',
-        step: 2,
-        minSize: 12,
-        maxSize: 72,
-      }),
-      ListItem,
-      OrderedList,
-      BulletList,
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
-      Blockquote,
-      CodeBlock,
-      HorizontalRule,
-      Image,
-      Table.configure({
-        resizable: true,
-      }),
-      TableHeader,
-      TableRow,
-      TableCell,
-    ],
+    extensions,
     content: exampleContent,
     editable,
   });
@@ -260,23 +265,103 @@ const Editor = ({ editable }: EditorProps) => {
   return (
     <div className='editor'>
       <div className='editor-content'>
-        {/* {editable && <MenuBar editor={editor} editable={editable} />} */}
         {editor && (
-          <>
-            {/* 选中时的操作菜单 */}
-            <BubbleMenu
-              editor={editor}
-              tippyOptions={{
-                duration: 100,
-                placement: 'top',
-                maxWidth: '100%',
-              }}
-            >
-              <EditorMenu editor={editor} />
-            </BubbleMenu>
-            {/* 表格操作菜单 */}
+          // 表格操作菜单
+          <BubbleMenu
+            editor={editor}
+            tippyOptions={{
+              duration: 100,
+              placement: 'top',
+              maxWidth: '100%',
+            }}
+            shouldShow={({ view, state, from, to }) => {
+              const { selection } = state;
+              const { empty } = selection;
+              // 检查选区是否在表格节点内
+              let isTableSelected = false;
+
+              editor.state.doc.nodesBetween(from, to, (node) => {
+                if (node.type.name === 'table') {
+                  isTableSelected = true;
+                }
+              });
+
+              const hasEditorFocus = view.hasFocus();
+
+              if (
+                !isTableSelected ||
+                !hasEditorFocus ||
+                empty ||
+                !editor.isEditable
+              ) {
+                return false;
+              }
+
+              return true;
+            }}
+          >
             <TableMenu editor={editor} />
-          </>
+          </BubbleMenu>
+        )}
+        {editor && (
+          // 选中时的操作菜单
+          <BubbleMenu
+            editor={editor}
+            tippyOptions={{
+              duration: 100,
+              placement: 'top',
+              maxWidth: '100%',
+            }}
+            shouldShow={({ view, state, from, to }) => {
+              const { doc, selection } = state;
+
+              // 检查选区是否在表格节点内
+              let isTableSelected = false;
+
+              editor.state.doc.nodesBetween(from, to, (node) => {
+                if (node.type.name === 'table') {
+                  isTableSelected = true;
+                }
+              });
+
+              const { empty } = selection;
+
+              // 检查选区是否是文本节点，避免对非文本节点生效，例如图片，因为图标没有加粗、字号、字体等调整
+              let isSelectedText = false;
+
+              editor.state.doc.nodesBetween(from, to, (node) => {
+                if (node.isText) {
+                  isSelectedText = true;
+                  return false;
+                }
+                return true;
+              });
+
+              // 有时仅检查 `empty` 是不够的。
+              // 双击一个空段落会返回节点大小为 2。
+              // 因此我们还需要检查文本大小是否为空。
+              const isEmptyTextBlock =
+                !doc.textBetween(from, to).length &&
+                isTextSelection(state.selection);
+
+              const hasEditorFocus = view.hasFocus();
+
+              if (
+                isTableSelected ||
+                !isSelectedText ||
+                !hasEditorFocus ||
+                empty ||
+                isEmptyTextBlock ||
+                !editor.isEditable
+              ) {
+                return false;
+              }
+
+              return true;
+            }}
+          >
+            <EditorMenu editor={editor} />
+          </BubbleMenu>
         )}
         {editor && (
           // 空白行的操作菜单

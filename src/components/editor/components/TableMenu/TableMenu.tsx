@@ -31,14 +31,14 @@ interface TableMenuProps {
 
 /** 表格操作菜单 */
 export default function TableMenu({ editor }: TableMenuProps) {
-  if (!editor) {
+  if (!editor.isEditable) {
     return null;
   }
 
   return (
     <div className='control-group'>
       <div className='button-group'>
-        <button
+        {/* <button
           onClick={() =>
             editor
               .chain()
@@ -63,7 +63,7 @@ export default function TableMenu({ editor }: TableMenuProps) {
           }
         >
           插入HTML表格
-        </button>
+        </button> */}
         <button
           onClick={() => editor.chain().focus().addColumnBefore().run()}
           disabled={!editor.can().addColumnBefore()}
