@@ -13,7 +13,6 @@ import {
   CommentInterface,
   AddCommentInterface,
 } from './types';
-import classNames from 'classnames';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -27,7 +26,7 @@ declare module '@tiptap/core' {
   }
 }
 
-const CommentsExtsnsion = Mark.create<
+const CommentsExtension = Mark.create<
   CommentOptionsInterface,
   CommentsStorageInterface
 >({
@@ -38,7 +37,11 @@ const CommentsExtsnsion = Mark.create<
   //     };
   //   },
   renderHTML({ HTMLAttributes }) {
-    return ['span', mergeAttributes(HTMLAttributes), 0];
+    return [
+      'span',
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
   },
   parseHTML() {
     return [
@@ -53,7 +56,6 @@ const CommentsExtsnsion = Mark.create<
     return {
       comments: [],
       comment_id: null,
-      hovered_comment_id: null,
     };
   },
   addAttributes() {
@@ -125,6 +127,7 @@ const CommentsExtsnsion = Mark.create<
           const commentIndex = findIndex(comments[index].comments ?? [], {
             uuid: commentId,
           });
+          // 删除目标comment
           comments[index].comments?.splice(commentIndex, 1);
 
           if (!comments[index].comments?.length) {
@@ -178,21 +181,16 @@ const CommentsExtsnsion = Mark.create<
               node.marks.forEach((mark) => {
                 if (mark.type.name === 'comment') {
                   const commentId = mark.attrs.comment_id;
-                  const { comment_id, hovered_comment_id } = this.storage;
+                  const { comment_id } = this.storage;
                   const isActive = comment_id && comment_id === commentId;
-                  const isHover =
-                    hovered_comment_id && hovered_comment_id === commentId;
 
-                  if (isActive || isHover) {
+                  if (isActive) {
                     // 创建高亮装饰
                     const decoration = Decoration.inline(
                       pos,
                       pos + node.nodeSize,
                       {
-                        class: classNames({
-                          'comment-highlight': isActive,
-                          'comment-hover': isHover,
-                        }),
+                        class: 'comment-highlight',
                       }
                     );
                     decorations.push(decoration);
@@ -243,4 +241,4 @@ const CommentsExtsnsion = Mark.create<
   },
 });
 
-export default CommentsExtsnsion;
+export default CommentsExtension;

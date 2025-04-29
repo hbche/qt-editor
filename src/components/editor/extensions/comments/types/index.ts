@@ -27,13 +27,14 @@ export interface CustomCommentInterface {
   comments: CommentInterface[] | null;
 }
 
+/**
+ * CommentsExtension 的存储结构
+ */
 export interface CommentsStorageInterface {
   /** 批注的列表 */
   comments: CustomCommentInterface[];
   /** 当前选中的批注的id */
   comment_id: string | null;
-  /** 当前hover中的批注的id */
-  hovered_comment_id: string | null;
 }
 
 export interface CommentUserInfo {
@@ -42,6 +43,14 @@ export interface CommentUserInfo {
   id: string;
 }
 
+/**
+ * CommentExtension扩展的默认参数
+ */
 export interface CommentOptionsInterface {
+  /** 当前批注的用户信息 */
   user: CommentUserInfo;
+  /** 批注部分的HTML属性 */
+  HTMLAttributes: Record<string, any>;
+  /** 当前处于激活状态的 批注 */
+  onCommentActivated: (commentId: string) => void;
 }
