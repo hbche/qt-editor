@@ -124,7 +124,7 @@ export default function TableMenu({ editor }: TableMenuProps) {
         >
           表头样式切换
         </button>
-        <button
+        {/* <button
           onClick={() => editor.chain().focus().goToNextCell().run()}
           disabled={!editor.can().goToNextCell()}
         >
@@ -135,7 +135,7 @@ export default function TableMenu({ editor }: TableMenuProps) {
           disabled={!editor.can().goToPreviousCell()}
         >
           移动到前一个单元格
-        </button>
+        </button> */}
       </div>
     </div>
   );

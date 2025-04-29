@@ -1,4 +1,5 @@
-import './ContentView.scss';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import './content-view.scss';
 
 interface ContentViewProps {
   jsonContent: any;

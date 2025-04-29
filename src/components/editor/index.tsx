@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import CodeBlock from '@tiptap/extension-code-block';
@@ -33,12 +34,15 @@ import {
   useEditor,
 } from '@tiptap/react';
 import { useEffect, useState } from 'react';
-import ContentView from './components/ContentView/ContentView';
-import EditorMenu from './components/EditorMenu/EditorMenu';
-import FontSize from './extensions/FontSize/FontSize';
+import ContentView from './components/content-view/content-view';
+import EditorMenu from './components/editor-menu/editor-menu';
+import FontSize from './extensions/font-size/font-size';
 import './index.scss';
 import BulletList from '@tiptap/extension-bullet-list';
-import TableMenu from './components/TableMenu/TableMenu';
+import TableMenu from './components/table-menu/table-menu';
+import CommentsExtsnsion from './extensions/comments';
+import CommentsView from './extensions/comments/comments-view/comments-view';
+import CommentsProvider from './extensions/comments/comments-provider';
 
 const exampleContent = `
     <h1>Tiptap Editor</h1>
@@ -132,7 +136,6 @@ const Editor = ({ editable }: EditorProps) => {
     Document,
     Heading,
     Paragraph,
-    // CustomParagraph,
     Text,
     Underline,
     TextStyle,
@@ -241,6 +244,13 @@ const Editor = ({ editable }: EditorProps) => {
       minSize: 12,
       maxSize: 72,
     }),
+    CommentsExtsnsion.configure({
+      user: {
+        firstName: 'Hanbin',
+        lastName: 'Che',
+        id: '1',
+      },
+    }),
   ];
   const editor: TiptapEditor | null = useEditor({
     extensions,
@@ -263,119 +273,130 @@ const Editor = ({ editable }: EditorProps) => {
   }, [editor, editable]);
 
   return (
-    <div className='editor'>
-      <div className='editor-content'>
-        {editor && (
-          // 表格操作菜单
-          <BubbleMenu
-            editor={editor}
-            tippyOptions={{
-              duration: 100,
-              placement: 'top',
-              maxWidth: '100%',
-            }}
-            shouldShow={({ view, state, from, to }) => {
-              const { selection } = state;
-              const { empty } = selection;
-              // 检查选区是否在表格节点内
-              let isTableSelected = false;
+    <CommentsProvider>
+      <div className='editor'>
+        <div className='editor-container'>
+          <div className='editor-content'>
+            {editor && (
+              // 表格操作菜单
+              <BubbleMenu
+                editor={editor}
+                tippyOptions={{
+                  duration: 100,
+                  placement: 'top',
+                  maxWidth: '100%',
+                }}
+                shouldShow={({ view, state, from, to }) => {
+                  const { selection } = state;
+                  const { empty } = selection;
+                  // 检查选区是否在表格节点内
+                  let isTableSelected = false;
 
-              editor.state.doc.nodesBetween(from, to, (node) => {
-                if (node.type.name === 'table') {
-                  isTableSelected = true;
-                }
-              });
+                  editor.state.doc.nodesBetween(from, to, (node) => {
+                    if (node.type.name === 'table') {
+                      isTableSelected = true;
+                    }
+                  });
 
-              const hasEditorFocus = view.hasFocus();
+                  const hasEditorFocus = view.hasFocus();
 
-              if (
-                !isTableSelected ||
-                !hasEditorFocus ||
-                empty ||
-                !editor.isEditable
-              ) {
-                return false;
-              }
+                  if (
+                    !isTableSelected ||
+                    !hasEditorFocus ||
+                    empty ||
+                    !editor.isEditable
+                  ) {
+                    return false;
+                  }
 
-              return true;
-            }}
-          >
-            <TableMenu editor={editor} />
-          </BubbleMenu>
-        )}
-        {editor && (
-          // 选中时的操作菜单
-          <BubbleMenu
-            editor={editor}
-            tippyOptions={{
-              duration: 100,
-              placement: 'top',
-              maxWidth: '100%',
-            }}
-            shouldShow={({ view, state, from, to }) => {
-              const { doc, selection } = state;
+                  return true;
+                }}
+              >
+                <TableMenu editor={editor} />
+              </BubbleMenu>
+            )}
+            {editor && (
+              // 选中时的操作菜单
+              <BubbleMenu
+                editor={editor}
+                tippyOptions={{
+                  duration: 100,
+                  placement: 'top',
+                  maxWidth: '100%',
+                }}
+                shouldShow={({ view, state, from, to }) => {
+                  const { doc, selection } = state;
 
-              // 检查选区是否在表格节点内
-              let isTableSelected = false;
+                  // 检查选区是否在表格节点内
+                  let isTableSelected = false;
 
-              editor.state.doc.nodesBetween(from, to, (node) => {
-                if (node.type.name === 'table') {
-                  isTableSelected = true;
-                }
-              });
+                  editor.state.doc.nodesBetween(from, to, (node) => {
+                    if (node.type.name === 'table') {
+                      isTableSelected = true;
+                    }
+                  });
 
-              const { empty } = selection;
+                  const { empty } = selection;
 
-              // 检查选区是否是文本节点，避免对非文本节点生效，例如图片，因为图标没有加粗、字号、字体等调整
-              let isSelectedText = false;
+                  // 检查选区是否是文本节点，避免对非文本节点生效，例如图片，因为图标没有加粗、字号、字体等调整
+                  let isSelectedText = false;
 
-              editor.state.doc.nodesBetween(from, to, (node) => {
-                if (node.isText) {
-                  isSelectedText = true;
-                  return false;
-                }
-                return true;
-              });
+                  editor.state.doc.nodesBetween(from, to, (node) => {
+                    if (node.isText) {
+                      isSelectedText = true;
+                      return false;
+                    }
+                    return true;
+                  });
 
-              // 有时仅检查 `empty` 是不够的。
-              // 双击一个空段落会返回节点大小为 2。
-              // 因此我们还需要检查文本大小是否为空。
-              const isEmptyTextBlock =
-                !doc.textBetween(from, to).length &&
-                isTextSelection(state.selection);
+                  // 有时仅检查 `empty` 是不够的。
+                  // 双击一个空段落会返回节点大小为 2。
+                  // 因此我们还需要检查文本大小是否为空。
+                  const isEmptyTextBlock =
+                    !doc.textBetween(from, to).length &&
+                    isTextSelection(state.selection);
 
-              const hasEditorFocus = view.hasFocus();
+                  const hasEditorFocus = view.hasFocus();
 
-              if (
-                isTableSelected ||
-                !isSelectedText ||
-                !hasEditorFocus ||
-                empty ||
-                isEmptyTextBlock ||
-                !editor.isEditable
-              ) {
-                return false;
-              }
+                  if (
+                    isTableSelected ||
+                    !isSelectedText ||
+                    !hasEditorFocus ||
+                    empty ||
+                    isEmptyTextBlock ||
+                    !editor.isEditable
+                  ) {
+                    return false;
+                  }
 
-              return true;
-            }}
-          >
-            <EditorMenu editor={editor} />
-          </BubbleMenu>
-        )}
-        {editor && (
-          // 空白行的操作菜单
-          <FloatingMenu
-            editor={editor}
-            tippyOptions={{ duration: 100, placement: 'top', maxWidth: '100%' }}
-          >
-            <EditorMenu editor={editor} />
-          </FloatingMenu>
-        )}
-        <EditorContent editor={editor} />
+                  return true;
+                }}
+              >
+                <EditorMenu editor={editor} />
+              </BubbleMenu>
+            )}
+            {editor && (
+              // 空白行的操作菜单
+              <FloatingMenu
+                editor={editor}
+                tippyOptions={{
+                  duration: 100,
+                  placement: 'top',
+                  maxWidth: '100%',
+                }}
+              >
+                <EditorMenu editor={editor} />
+              </FloatingMenu>
+            )}
+            <EditorContent editor={editor} />
+          </div>
+          <div className='editor-comments'>
+            {editor && <CommentsView editor={editor} />}
+          </div>
+        </div>
+        <ContentView jsonContent={jsonContent} />
       </div>
-      <ContentView jsonContent={jsonContent} />
-    </div>
+    </CommentsProvider>
   );
 };
 

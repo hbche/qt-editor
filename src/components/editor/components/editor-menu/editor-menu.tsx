@@ -1,7 +1,7 @@
 import { Editor } from '@tiptap/react';
 import classNames from 'classnames';
-import './EditorMenu.scss';
-import { FontSizeBar } from './FontSizeBar/FontSizeBar';
+import './editor-menu.scss';
+import { FontSizeBar } from './font-size-bar/font-size-bar';
 
 interface EditorMenuProps {
   editor: Editor;
@@ -525,38 +525,51 @@ export const EditorMenu = ({ editor }: EditorMenuProps) => {
               <path
                 d='M19.65 3H4.35C3.60441 3 3 3.60441 3 4.35V19.65C3 20.3956 3.60441 21 4.35 21H19.65C20.3956 21 21 20.3956 21 19.65V4.35C21 3.60441 20.3956 3 19.65 3Z'
                 stroke='#333'
-                stroke-width='2'
+                strokeWidth='2'
               />
               <path
                 d='M9 3V21'
                 stroke='#333'
-                stroke-width='2'
-                stroke-linecap='round'
+                strokeWidth='2'
+                strokeLinecap='round'
               />
               <path
                 d='M15 3V21'
                 stroke='#333'
-                stroke-width='2'
-                stroke-linecap='round'
+                strokeWidth='2'
+                strokeLinecap='round'
               />
               <path
                 d='M3 9H21'
                 stroke='#333'
-                stroke-width='2'
-                stroke-linecap='round'
+                strokeWidth='2'
+                strokeLinecap='round'
               />
               <path
                 d='M3 15H21'
                 stroke='#333'
-                stroke-width='2'
-                stroke-linecap='round'
+                strokeWidth='2'
+                strokeLinecap='round'
               />
             </svg>
           </button>
         </li>
         <li className={`${className}-seperator`} />
         <li>
-          <button className={`${className}-btn`}>
+          <button
+            className={classNames(`${className}-btn`, {
+              active: editor.isActive('comment'),
+            })}
+            onClick={() => {
+              editor
+                .chain()
+                .addComments({
+                  comment: '',
+                  parent_id: null,
+                })
+                .run();
+            }}
+          >
             <svg
               width='1em'
               height='1em'

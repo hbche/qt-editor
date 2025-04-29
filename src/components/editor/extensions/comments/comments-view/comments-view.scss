@@ -1,0 +1,104 @@
+.editor-comments-view {
+    &-header {
+        padding: 8px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    &-list {
+        padding: 0 12px;
+        position: relative;
+
+        &-item {
+            &:not(:last-child) {
+                margin-bottom: 8px;
+            }
+
+            &-wrapper {
+                position: relative;
+                width: 270px;
+                line-height: 1.5;
+                border-radius: 6px;
+                // background-color: var(--bg-float);
+                border: 1px solid #ccc;
+                cursor: pointer;
+
+                &:hover {
+                    box-shadow: 0 0 0 1px var(--gray-4) inset;
+                }
+
+                &.active {
+                    box-shadow: 0 0 0 1px var(--purple) inset;
+                }
+
+                .active {
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        top: -2px;
+                        left: -1px;
+                        right: -1px;
+                        border-top: 6px solid var(--yellow);
+                        border-top-left-radius: 6px;
+                        border-top-right-radius: 6px;
+                    }
+                }
+            }
+
+            &-title {
+                position: relative;
+                margin: 9px 12px 6px;
+                padding: 0 8px;
+                text-overflow: ellipsis;
+                line-height: 18px;
+                height: 20px;
+                text-wrap: nowrap;
+                overflow: hidden;
+
+                &:before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 2px;
+                    height: 16px;
+                    background-color: #bbbfc4;
+                    border-radius: 1px;
+                }
+            }
+
+            &-content {
+                padding: 6px 12px;
+
+                &-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                &-comment {
+                    margin-top: 4px;
+                }
+            }
+        }
+    }
+
+    &-date {
+        color: #999;
+    }
+
+    &-operation {
+        display: flex;
+        align-items: center;
+
+        button {
+            height: 24px;
+            padding: 4px;
+            border-radius: 4px;
+
+            &:hover {
+                background-color: #ccc;
+            }
+        }
+    }
+}

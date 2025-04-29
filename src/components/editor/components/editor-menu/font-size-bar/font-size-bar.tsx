@@ -1,7 +1,7 @@
 import { Editor } from '@tiptap/react';
 
-import './FontSizeBar.scss';
-import { extractFontSizeValue } from '../../../extensions/FontSize/FontSize';
+import './font-size-bar.scss';
+import { extractFontSizeValue } from '../../../extensions/font-size/font-size';
 import classNames from 'classnames';
 
 interface FontSizeBarProps {
