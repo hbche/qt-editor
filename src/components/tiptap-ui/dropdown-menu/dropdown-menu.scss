@@ -1,0 +1,111 @@
+.qt-editor-dropdown-menu {
+  z-index: 1001;
+  min-width: 8rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  padding: 0.25rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  animation: qt-editor-dropdown-menu-in 0.15s ease-out;
+}
+
+.qt-editor-dropdown-menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: transparent;
+  color: #313c4a;
+  cursor: pointer;
+  transition-property: background-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  outline: none;
+
+  &:focus,
+  &[data-highlighted='true'] {
+    background-color: #f2f5f9;
+    color: #313c4a;
+  }
+
+  &[data-disabled='true'] {
+    color: #9ca3af;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Icon within menu item */
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Keyboard shortcut styling */
+  kbd {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+}
+
+.qt-editor-dropdown-menu-separator {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0.25rem 0;
+}
+
+/* Animation keyframes */
+@keyframes qt-editor-dropdown-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus ring for accessibility */
+// .qt-editor-dropdown-menu-item:focus-visible {
+//   outline: 2px solid #3b82f6;
+//   outline-offset: 2px;
+// }
+
+/* States for better UX */
+.qt-editor-dropdown-menu-item[data-state='checked'] {
+  background-color: #e8f8ff;
+  color: #008fd9;
+}
+
+/* Sub-menu indicator */
+.qt-editor-dropdown-menu-item[data-has-submenu='true'] {
+  &::after {
+    content: '';
+    margin-left: auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid currentColor;
+    border-top: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+}
+
+/* Menu item with danger state */
+.qt-editor-dropdown-menu-item[data-variant='destructive'] {
+  color: #dc2626;
+
+  &:focus,
+  &[data-highlighted='true'] {
+    background-color: #fef2f2;
+    color: #dc2626;
+  }
+}

@@ -1,0 +1,55 @@
+.qt-editor-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 48px;
+  border-bottom: 1px solid #dfe3ea;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  background-color: #fff;
+
+  &-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    &-title {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      flex-direction: column;
+      gap: 2px;
+
+      input {
+        width: auto;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        outline: none;
+      }
+    }
+  }
+
+  &-saved-time {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  &-button.qt-editor-button {
+    border: 1px solid #cfd4dc;
+    border-radius: 4px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 16px;
+  }
+
+  &-right-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}

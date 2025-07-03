@@ -1,0 +1,40 @@
+.qt-editor-menuBar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  padding-left: 15%;
+  border-bottom: 1px solid #dfe3ea;
+  font-size: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  background-color: #fff;
+
+  &-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    .qt-editor-button {
+      font-size: 14px;
+    }
+  }
+
+  &-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 70px;
+  }
+
+  /* 表格操作菜单样式 */
+  .tableOperations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+}

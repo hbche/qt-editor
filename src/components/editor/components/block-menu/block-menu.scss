@@ -1,0 +1,11 @@
+.block-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: -16px;
+
+  &-trigger {
+    border: 1px solid #e0e0e0;
+  }
+}
